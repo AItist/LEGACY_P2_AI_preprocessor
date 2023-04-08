@@ -1,13 +1,25 @@
-# python websocket client
-import websocket
+#!/usr/bin/env python
 
-# Define the WebSocket URL
-websocket_url = 'ws://localhost:3000/websocket/websocket'
+import asyncio
+import websockets
 
-# Define the callback function for receiving messages
-def on_message(ws, message):
-    print(f'Received message: {message}')
+async def receive_stream_data():
+    uri = "ws://localhost:8080"
+    async with websockets.connect(uri) as websocket:
+        try:
+            while True:
+                # await websocket.send("Hello, server!")
+                # print(f">>> Hello, server!")
 
-# Create a WebSocket instance and connect to the server
-ws = websocket.ws(websocket_url, on_message=on_message)
-ws.run_forever()
+                greeting = await websocket.recv()
+                print(f"<<< {greeting}")
+        except KeyboardInterrupt:
+            # clean up resources here
+            pass
+
+
+async def main():
+    await receive_stream_data()
+
+if __name__ == "__main__":
+    asyncio.run(main())
