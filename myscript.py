@@ -6,5 +6,5 @@
 
 import os
 
-my_var = os.environ.get('MY_ENV_VAR')
+my_var = os.environ.get('MY_VAR')
 print(my_var)
