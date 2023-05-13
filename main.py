@@ -51,7 +51,7 @@ async def detect_img(data):
     return 'result is here'
 
 
-async def receive_stream_data():
+async def receive_stream_data(ys):
     import cv2
     import base64
     import numpy as np
@@ -91,10 +91,13 @@ async def receive_stream_data():
                     task2 = asyncio.create_task(write_img(data.copy()))
                     await task2
 
-                    task3 = asyncio.create_task(detect_img(data.copy()))
-                    result = await task3
+                    # task3 = asyncio.create_task(detect_img(data.copy()))
+                    # result_data = await task3
+                    # print('Result : ', result_data)
 
-                    print('Result : ', result)
+                    # print(data[2].shape)
+                    read_img(data.copy())
+
                     # del data
 
                     # cv2.imshow(f'Webcam {index}', reshaped_frame)
@@ -115,9 +118,34 @@ async def receive_stream_data():
             # clean up resources here
             pass
 
+def yolo():
+    from yolo_segmentation import YOLOSegmentation
 
-async def main():
-    await receive_stream_data()
+    ys = YOLOSegmentation("yolov8s-seg.pt")
+
+    return ys
+
+# 이미지 읽어오기 잘 되나?
+def read_img(data):
+    import cv2
+    # img = cv2.
+    # img = cv2.imread(data[2])
+    # cv2.
+    # cv2.imread
+    # img = cv2.cvtColor(data[2], cv2.COLOR_RGB2BGR)
+    img = data[2]
+    # print(img.shape)
+    # print
+    cv2.imwrite('test.jpg', img)
+    # cv2.imshow('test', img)
+    pass
+
+async def main(ys):
+    await receive_stream_data(ys)
 
 if __name__ == "__main__":
-    asyncio.run(main())
+
+    ys = yolo()
+
+    print(type(ys))
+    asyncio.run(main(ys))
