@@ -47,7 +47,9 @@ def data_unpack_process(data):
     pass
 
 async def detect_img(data):
-    pass
+
+    return 'result is here'
+
 
 async def receive_stream_data():
     import cv2
@@ -90,8 +92,9 @@ async def receive_stream_data():
                     await task2
 
                     task3 = asyncio.create_task(detect_img(data.copy()))
-                    await task3
-                    
+                    result = await task3
+
+                    print('Result : ', result)
                     # del data
 
                     # cv2.imshow(f'Webcam {index}', reshaped_frame)
