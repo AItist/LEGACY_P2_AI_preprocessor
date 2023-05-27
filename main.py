@@ -5,14 +5,10 @@ isDebug = True
 
 from common.data_ import data_unpack_process, data_package_process
 
-# ---------------------------------------------------
-# ---------------------------------------------------
-# ---------------------------------------------------
-
 # queue = asyncio.Queue()
-stack = asyncStack()
-sendQueue = asyncio.Queue()
-condition = asyncio.Condition()
+stack = asyncStack() # 웹소켓으로 받은 데이터 저장용 스택
+sendQueue = asyncio.Queue() # 가공 완료 데이터 전송용 큐
+# condition = asyncio.Condition() # 동기화용 condition (현재 안씀)
 
 async def async_websocket():
     """
@@ -45,7 +41,6 @@ async def async_websocket():
 
         except Exception as e:
             print(e)
-
 
 async def async_check():
     import json
