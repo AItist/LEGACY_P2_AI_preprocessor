@@ -15,8 +15,11 @@ async def detect_mediapipe_pose(imgdata, debug=False):
 
     mp_drawing.draw_landmarks(img, results.pose_landmarks, mp_pose.POSE_CONNECTIONS)
     
+    img_bgr = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
+
     if debug:
         cv2.imwrite(f'webcam {imgdata[0]} pose.jpg', img)
 
-    return img
+    return img_bgr
+    # return img
     pass

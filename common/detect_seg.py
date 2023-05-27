@@ -38,6 +38,9 @@ async def detect_person_img(imgData, debug=False):
     if count == 0:
         return None
 
+    img_bgr = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
+
     if debug:
         cv2.imwrite(f'webcam {imgData[0]} seg.jpg', img)
-    return img
+    return img_bgr
+    # return img
