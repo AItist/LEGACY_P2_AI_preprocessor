@@ -4,7 +4,8 @@ def yolo_instance():
     """
     from yolo_segmentation import YOLOSegmentation
 
-    ys = YOLOSegmentation("yolov8s-seg.pt")
+    ys = YOLOSegmentation("yolov8n-seg.pt")
+    # ys = YOLOSegmentation("yolov8s-seg.pt")
 
     # ys.detect
     return ys
