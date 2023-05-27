@@ -1,5 +1,5 @@
 import asyncio
-from asyncioStack import AsyncioStack as asyncStack
+from common.asyncioStack import AsyncioStack as asyncStack
 
 import mediapipe as mp
 mp_drawing = mp.solutions.drawing_utils
@@ -136,6 +136,7 @@ async def async_websocket():
 
 async def async_check():
     import json
+    import time
 
     while True:
         async with condition:
@@ -147,15 +148,18 @@ async def async_check():
         
         try:
             parsed_data = json.loads(data)
+            # print(parsed_data)
             
             _data = data_unpack_process(parsed_data)
 
+            start = time.time()
             pose_img, seg_img = await asyncio.gather(
                 detect_mediapipe_pose(_data.copy()),
                 detect_person_img(_data.copy(), ys),
             )
+            end = time.time()
+            print(f"async check /detect time : {end - start}")
 
-            print(parsed_data)
         except Exception as e:
             print(e)
 
@@ -165,7 +169,7 @@ async def async_check():
         print(f"async check /current /stacked {stack.len()}")
         # print(f"async check /current {data} /stacked {stack.len()}")
 
-        await asyncio.sleep(2)
+        # await asyncio.sleep(2)
 
 async def main():
     coro1 = async_websocket()
