@@ -2,7 +2,7 @@
 from common.yolo_ import yolo_instance
 ys = yolo_instance()
 
-async def detect_person_img(data, debug=False):
+async def detect_person_img(imgData, debug=False):
     """
     이미지에서 사람을 검출한다.
     data[0] : index
@@ -13,7 +13,7 @@ async def detect_person_img(data, debug=False):
     return : 사람 검출된 이미지 / 검출된 사람이 없으면 None
     """
     import cv2
-    img = data[2]
+    img = imgData[2]
 
     # print(111)
     bboxes, classes, segmentations, scores = ys.detect(img)
@@ -39,5 +39,5 @@ async def detect_person_img(data, debug=False):
         return None
 
     if debug:
-        cv2.imwrite(f'webcam {data[0]} seg.jpg', img)
+        cv2.imwrite(f'webcam {imgData[0]} seg.jpg', img)
     return img
