@@ -1,25 +1,12 @@
+from common.enum_ import ePoses
 import asyncio
-import mediapipe as mp
 
-mp_drawing = mp.solutions.drawing_utils
-mp_pose = mp.solutions.pose
-pose = mp_pose.Pose(static_image_mode=False, min_detection_confidence=0.3)
+async def detect_pose(imgdata, ePoses=ePoses.MEDIAPIPE, debug=False):
 
-async def detect_mediapipe_pose(imgdata, debug=False):
-    import cv2
-    # await asyncio.sleep(0.005)
-
-    img = imgdata[2]
-
-    results = pose.process(img)
-
-    mp_drawing.draw_landmarks(img, results.pose_landmarks, mp_pose.POSE_CONNECTIONS)
+    if ePoses == ePoses.MEDIAPIPE:
+        import common.pose.mediapipe_ as mediapipe_
+        return await mediapipe_.detect_pose(imgdata, debug=debug)
     
-    img_bgr = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
-
-    if debug:
-        cv2.imwrite(f'webcam {imgdata[0]} pose.jpg', img)
-
-    return img_bgr
-    # return img
-    pass
+    """
+    TODO: 새로운 포즈 인식 모델을 추가할 때마다 이곳에 추가해야 함.
+    """

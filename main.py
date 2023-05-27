@@ -1,11 +1,13 @@
 import asyncio
 from common.asyncioStack import AsyncioStack as asyncStack
+from common.data_ import data_unpack_process, data_package_process
+from common.enum_ import ePoses, eSegs
 
 isDebug = True
+poseFlag = ePoses.MEDIAPIPE
+segFlag = eSegs.YOLO
 
-from common.data_ import data_unpack_process, data_package_process
 
-# queue = asyncio.Queue()
 stack = asyncStack() # 웹소켓으로 받은 데이터 저장용 스택
 sendQueue = asyncio.Queue() # 가공 완료 데이터 전송용 큐
 # condition = asyncio.Condition() # 동기화용 condition (현재 안씀)
@@ -42,11 +44,11 @@ async def async_websocket():
         except Exception as e:
             print(e)
 
-async def async_check():
+async def async_detection():
     import json
     import time
-    from common.detect_pose import detect_mediapipe_pose
-    from common.detect_seg import detect_person_img
+    from common.detect_pose import detect_pose
+    from common.detect_seg import detect_seg
 
     while True:
         # async with condition:
@@ -75,8 +77,8 @@ async def async_check():
 
             start = time.time()
             pose_img, seg_img = await asyncio.gather(
-                detect_mediapipe_pose(_data.copy(), debug=isDebug),
-                detect_person_img(_data.copy(), debug=isDebug),
+                detect_pose(_data.copy(), poseFlag, debug=isDebug),
+                detect_seg(_data.copy(), segFlag, debug=isDebug),
             )
             end = time.time()
             print(f"async check /detect time : {end - start}")
@@ -103,7 +105,7 @@ async def async_check():
 
 async def main():
     coro1 = async_websocket()
-    coro2 = async_check()
+    coro2 = async_detection()
     await asyncio.gather(
         coro1,
         coro2,
