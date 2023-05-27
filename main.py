@@ -6,17 +6,8 @@ mp_drawing = mp.solutions.drawing_utils
 mp_pose = mp.solutions.pose
 pose = mp_pose.Pose(static_image_mode=False, min_detection_confidence=0.3)
 
-def yolo_instance():
-    """
-    yolo 인스턴스 생성
-    """
-    from yolo_segmentation import YOLOSegmentation
 
-    ys = YOLOSegmentation("yolov8s-seg.pt")
-
-    # ys.detect
-    return ys
-
+from common.yolo_ import yolo_instance
 ys = yolo_instance()
 
 def data_unpack_process(data):
