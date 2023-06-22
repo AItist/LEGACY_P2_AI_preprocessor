@@ -37,15 +37,15 @@ def data_package_process(data):
     import gzip
     import base64
 
-    compressed = gzip.compress(data[2])
-    compressed = gzip.compress(data[3])
+    compressed_pose = gzip.compress(data[2])
+    compressed_seg = gzip.compress(data[3])
     # print(compressed)
 
     _data = {
         'index': data[0],
         'ret': data[1],
-        'frame': base64.b64encode(compressed).decode('utf-8'),
-        'poseframe': base64.b64encode(compressed).decode('utf-8')
+        'frame': base64.b64encode(compressed_pose).decode('utf-8'),
+        'poseframe': base64.b64encode(compressed_seg).decode('utf-8')
     }
 
     json_data = json.dumps(_data)

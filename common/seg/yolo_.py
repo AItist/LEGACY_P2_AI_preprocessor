@@ -14,6 +14,7 @@ ys = yolo_instance()
 
 async def detect_seg(imgData, debug=False):
     import cv2
+    import numpy as np
     img = imgData[2]
 
     # print(111)

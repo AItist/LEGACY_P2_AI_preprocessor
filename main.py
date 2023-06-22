@@ -7,10 +7,8 @@ isDebug = True
 poseFlag = ePoses.MEDIAPIPE
 segFlag = eSegs.YOLO
 
-
 stack = asyncStack() # 웹소켓으로 받은 데이터 저장용 스택
 sendQueue = asyncio.Queue() # 가공 완료 데이터 전송용 큐
-# condition = asyncio.Condition() # 동기화용 condition (현재 안씀)
 
 async def async_websocket():
     """
@@ -18,18 +16,17 @@ async def async_websocket():
     """
     import websockets
     
-    count = 0
+    debugCount = 0
 
     uri = "ws://localhost:8080"
     async with websockets.connect(uri) as websocket:
         try:
             while True:
                 data = await websocket.recv()
-                count += 1
+                debugCount += 1
                 await stack.push(data)
-                # await stack.push(count)
 
-                # print(f"recv count : {count}")
+                # print(f"recv count : {debugCount}")
 
                 # condition 쓰면 동기화됨..
                 # async with condition:
@@ -60,6 +57,7 @@ async def async_detection():
         # await condition.wait_for(lambda: stack.len() > 0)
         # data = await stack.pop()
         await asyncio.sleep(0.005)
+
         # stack에 하나라도 없으면 continue
         if stack.len() < 1:
             continue

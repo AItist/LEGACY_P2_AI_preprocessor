@@ -13,11 +13,16 @@ async def detect_pose(imgdata, debug=False):
 
     results = pose.process(img)
 
-    mp_drawing.draw_landmarks(img, results.pose_landmarks, mp_pose.POSE_CONNECTIONS)
+    # mp_drawing.draw_landmarks(img, results.pose_landmarks, mp_pose.POSE_CONNECTIONS)
     
     img_bgr = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
+
+    # print(results.pose_landmarks)
+    print(len(results.pose_landmarks.landmark))
 
     if debug:
         cv2.imwrite(f'webcam {imgdata[0]} pose.jpg', img)
 
+
+    # TODO : Image 대신에 Pose position을 전달한다.
     return img_bgr
