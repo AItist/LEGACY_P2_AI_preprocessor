@@ -44,8 +44,8 @@ async def async_websocket():
 async def async_detection():
     import json
     import time
-    from common.detect_pose import detect_pose
-    from common.detect_seg import detect_seg
+    from common.detect_pose import async_detect_pose
+    from common.detect_seg import async_detect_seg
 
     while True:
         # async with condition:
@@ -75,8 +75,8 @@ async def async_detection():
 
             start = time.time()
             pose_img, seg_img = await asyncio.gather(
-                detect_pose(_data.copy(), poseFlag, debug=isDebug),
-                detect_seg(_data.copy(), segFlag, debug=isDebug),
+                async_detect_pose(_data.copy(), poseFlag, debug=isDebug),
+                async_detect_seg(_data.copy(), segFlag, debug=isDebug),
             )
             end = time.time()
             print(f"async check /detect time : {end - start}")
