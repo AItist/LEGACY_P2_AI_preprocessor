@@ -10,6 +10,8 @@ import asyncio
 from common.data_ import data_unpack_process, data_package_process
 from common.enum_ import ePoses, eSegs
 
+print(f"this is _webcam_main")
+
 isDebug = False
 poseFlag = ePoses.CVZONE
 segFlag = eSegs.YOLO
@@ -101,13 +103,22 @@ def process_frames():
                         result = future.result()  # get the result (will raise an exception if the function failed)
                         # print(result)
 
+                        if result is None:
+                            print(f"Exception while processing frame 11: {result}")
+                            continue
+
+                        if result[3] == '':
+                            print(f"Exception while processing frame 22 text is empty")
+                            continue
+
                         packet = data_package_process(result)
+
 
                         # TODO: 웹소켓 전달, 테스트
                         sendQueue.put_nowait(packet)
 
                     except Exception as e:
-                        print(f"Exception while processing frame: {e}")
+                        print(f"Exception while processing frame 33: {e}")
 
                 # for key, value in frame_buffer.items():
                 #     if value is not None:  # check if the value is not None
@@ -133,12 +144,13 @@ async def async_websocket():
                 # async with condition:
                 #     condition.notify_all()
 
-                if sendQueue.qsize() > 0:
-                    print('qsize : ', sendQueue.qsize())
-                    for i in range(sendQueue.qsize()):
-                        packet = await sendQueue.get()
-                        await websocket.send(packet)
-
+                # if sendQueue.qsize() > 0:
+                #     print('qsize : ', sendQueue.qsize())
+                #     for i in range(sendQueue.qsize()):
+                #         packet = await sendQueue.get()
+                #         await websocket.send(packet)
+                time.sleep(0.5)
+                pass
         except Exception as e:
             print(e)
 
@@ -163,7 +175,7 @@ if __name__ == "__main__":
     t.start()
     threads.append(t)
 
-    asyncio.run(async_websocket())
+    # asyncio.run(async_websocket())
 
     for t in threads:
         t.join()
