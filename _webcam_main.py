@@ -113,7 +113,7 @@ def process_frames():
 
                         packet = data_package_process(result)
 
-
+                        
                         # TODO: 웹소켓 전달, 테스트
                         sendQueue.put_nowait(packet)
 
@@ -144,15 +144,20 @@ async def async_websocket():
                 # async with condition:
                 #     condition.notify_all()
 
-                # if sendQueue.qsize() > 0:
-                #     print('qsize : ', sendQueue.qsize())
-                #     for i in range(sendQueue.qsize()):
-                #         packet = await sendQueue.get()
-                #         await websocket.send(packet)
-                time.sleep(0.5)
+                # print('**********************************************')
+                if sendQueue.qsize() > 0:
+                    # print('qsize : ', sendQueue.qsize())
+                    for i in range(sendQueue.qsize()):
+                        packet = await sendQueue.get()
+                        await websocket.send(packet)
+                time.sleep(0.05)
                 pass
         except Exception as e:
             print(e)
+
+async def async_main():
+    coro1 = async_websocket()
+    await asyncio.gather(coro1)
 
 if __name__ == "__main__":
     webcam_lst = webcam_list.get_all_webcams()
@@ -175,7 +180,7 @@ if __name__ == "__main__":
     t.start()
     threads.append(t)
 
-    # asyncio.run(async_websocket())
+    asyncio.run(async_main())
 
     for t in threads:
         t.join()
