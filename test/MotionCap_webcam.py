@@ -3,7 +3,7 @@ from cvzone.PoseModule import PoseDetector
 import socket
 
 # cap = cv2.VideoCapture('test/Video.mp4')
-cap = cv2.VideoCapture(0)
+cap = cv2.VideoCapture(1)
 
 # Pose Detector
 detector = PoseDetector()
@@ -23,7 +23,7 @@ while True:
         for lm in lmList:
             lmString += f'{lm[1]},{img.shape[0] - lm[2]},{lm[3]},'
         # print(len(lmString))
-        # print(lmString)
+        print(lmString)
         # print()
 
         # posList.append(lmString)
