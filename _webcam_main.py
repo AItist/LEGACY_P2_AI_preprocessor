@@ -19,27 +19,37 @@ segFlag = eSegs.YOLO
 frame_buffer = {}
 sendQueue = asyncio.Queue() # 가공 완료 데이터 전송용 큐
 
+program_is_running = True
+lock = threading.Lock()
+
 def capture_frames(index, camIndex):
     """
     멀티스레드 환경에서 웹캠을 열고 프레임을 전송한다.
     """
     cap = cv2.VideoCapture(index)
+    cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1920)
+    cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 1080)
 
     while True:
+        # Check the global flag
+        # with lock:
+        if not program_is_running:
+            break
+        
         ret, frame = cap.read()
 
         if ret:
             # print(frame.shape) # (480, 640, 3)
             # print(type(frame)) # <class 'numpy.ndarray'>
-            # cv2.imshow(f"frame {camIndex}", frame)
             
-            # TODO: 디버깅
-            cv2.imwrite(f"frame {index}.jpg", frame)
+            # if isDebug:
+            #     cv2.imshow(f"frame {camIndex}", frame)
+            # print(frame.shape)
+            cv2.imwrite(f"frame {camIndex}.jpg", frame)
 
             # update the frame buffer with the latest frame
-            # TODO: 웹캠 오기 전까지 디버깅용으로 index 저장
-            frame_buffer[index] = frame
-            # frame_buffer[camIndex] = frame
+            # frame_buffer[index] = frame
+            frame_buffer[camIndex] = frame
 
 
             # # key: 'ESC'    
@@ -50,7 +60,7 @@ def capture_frames(index, camIndex):
             break
 
 
-        time.sleep(1/60)
+        time.sleep(1/5)
 
     cap.release() 
     cv2.destroyAllWindows()
@@ -64,15 +74,19 @@ def process_frame(camIndex, imgData, isDebug=False):
 
     # 포즈 처리 (검출 안되면 None, 검출되면 ,로 구분된 문자열)
     pose_img_string = detect_pose(imgData, poseFlag, debug=isDebug)
+    print(f'{camIndex} : {pose_img_string}')
 
     # 영역 처리
-    seg_img = detect_seg(imgData, segFlag, debug=isDebug)
+    # seg_img = detect_seg(imgData, segFlag, debug=isDebug)
+    # seg_img = cv2.flip(seg_img, 0)
+    # TODO : Debug
+    seg_img = None
 
     if isDebug:
-        print(pose_img_string) # CVZONE은 문자열화된 리스트 전달함
-        # cv2.imwrite(f"pose {camIndex}.jpg", pose_img_string) # MEDIAPIPE은 이미지 전달함. 제외 고민
+        ## cv2.imwrite(f"pose {camIndex}.jpg", pose_img_string) # MEDIAPIPE은 이미지 전달함. 제외 고민
 
-        cv2.imwrite(f"seg {camIndex}.jpg", seg_img)
+        ## print(pose_img_string) # CVZONE은 문자열화된 리스트 전달함
+        # cv2.imwrite(f"seg {camIndex}.jpg", seg_img)
         pass
 
     if seg_img is None:
@@ -89,6 +103,10 @@ def process_frames():
     """
     with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
         while True:
+            # with lock:
+            if not program_is_running:
+                break
+            
             if frame_buffer:  # check if frame_buffer is not empty
                 futures = []
                 for camIndex, imgData in list(frame_buffer.items()):
@@ -162,27 +180,40 @@ async def async_main():
 if __name__ == "__main__":
     webcam_lst = webcam_list.get_all_webcams()
     webcam_lst = webcam_list.get_available_webcams(webcam_lst)
+    print(webcam_lst)
 
-    # print(webcam_lst)
-    threads = []
+    try:
+        # print(webcam_lst)
+        threads = []
 
-    for index, camIndex in webcam_lst.items():
-        """
-        개별 웹캠의 입력을 받아온다.
-        """
-        print(index, camIndex)
-        t = threading.Thread(target=capture_frames, args=(index, camIndex))
+        for index, camIndex in webcam_lst.items():
+            """
+            개별 웹캠의 입력을 받아온다.
+            """
+            print(index, camIndex)
+            t = threading.Thread(target=capture_frames, args=(index, camIndex))
+            t.start()
+            threads.append(t)
+
+        # Start the process_frames function in a new thread
+        t = threading.Thread(target=process_frames)
         t.start()
         threads.append(t)
 
-    # Start the process_frames function in a new thread
-    t = threading.Thread(target=process_frames)
-    t.start()
-    threads.append(t)
+        asyncio.run(async_main())
+        
+    except KeyboardInterrupt:
+    # except Exception:
+        print("**********")
+        print("KeyboardInterrupt")
+        print("Interrupt")
+        print("**********")
+        with lock:
+            program_is_running = False
+        
+        for t in threads:
+            t.join()
 
-    asyncio.run(async_main())
+        cv2.destroyAllWindows()
+    
 
-    for t in threads:
-        t.join()
-
-    cv2.destroyAllWindows()

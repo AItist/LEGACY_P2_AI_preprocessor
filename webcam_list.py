@@ -39,7 +39,10 @@ def get_available_webcams(all_list):
     # 0: 'Intel(R) RealSense(TM) Depth Camera 435 with RGB Module RGB' = 1
     # TODO : 환경변수 가져오도록 수정 리스트에 속한 웹캠만 사용하도록 수정
     checklist = {'Intel(R) RealSense(TM) Depth Camera 435 with RGB Module RGB' : 0,
-                 'Intel(R) RealSense(TM) Depth Camera 435 with RGB Module RGB2' : 1}
+                 'HD 4MP WEBCAM' : 0, # ABKO
+                 'HD WEB CAMERA' : 1, # Home planet
+                 'WCAM200': 2, # WCAM200
+                 'HD-5M AutoFocus': 3} # Gcam
 
     for index, camera in all_list.items():
         cap = cv2.VideoCapture(index)
