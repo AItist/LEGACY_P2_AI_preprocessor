@@ -160,7 +160,6 @@ start = time.time()
 if CAMERA_COUNT == 1:
     print("Camera count is 1")
     midpoints = set_midpoints_with_1camera()
-    pass
 elif CAMERA_COUNT == 2:
     print("Camera count is 2")
     midpoints = set_midpoints_with_2cameras()
