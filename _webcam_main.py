@@ -280,9 +280,10 @@ def calculate_midpoints():
 
         time.sleep(1/10)
 
-        if len(pose_datas) < 2:
-            # print(f'pose_datas len : {len(pose_datas)}')
-            continue
+        # TODO : 디버그용 주석화
+        # if len(pose_datas) < 2:
+        #     # print(f'pose_datas len : {len(pose_datas)}')
+        #     continue
 
         if _is_all_seg_data_exist(packet_data) == False:
             # print(f'is all seg data exist : {_is_all_seg_data_exist(packet_data)}')
@@ -344,6 +345,7 @@ async def async_websocket():
                     for i in range(sendQueue.qsize()):
                         packet = await sendQueue.get()
                         await websocket.send(packet)
+                    # print(f"send complete")
                 time.sleep(0.05)
                 pass
         except Exception as e:
